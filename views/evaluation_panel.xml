@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!-- approver panel list view -->
+    <record id="view_approver_panel_tree" model="ir.ui.view">
+        <field name="name">approver.panel.list</field>
+        <field name="model">approver.panel</field>
+        <field name="arch" type="xml">
+           <tree string="Timesheet Approver Panel">
+              <field name="timesheet_approver_id"/>
+              <field name="period_id"/>
+            </tree>
+        </field>
+    </record>
+
+
+     <!-- approver panel form view -->
+     <record id="view_approver_panel_form" model="ir.ui.view">
+        <field name="name">approver.panel.form</field>
+        <field name="model">approver.panel</field>
+        <field name="arch" type="xml">
+            <form string="Timesheet Approver Panel">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open_for_approver,done"/>
+
+                    <!-- By hitting the approve_all_evaluation button, all validation needs to be checked
+                    and all distribution range and their actual quantity is shown -->
+                    <!-- <button name="approve_all_evaluation" string="Approve All Evaluation" type="object" class="oe_highlight"/> -->
+                    <!-- <button name="force_all_send_manager_eval" string="Force all evaluation to manager evaluation" type="object" class="oe_highlight"/> -->
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="timesheet_approver_id" />
+                            <field name="period_id" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Evaluations">
+                            <field name="evaluation_ids" >
+                                <tree string="Evaluation list" decoration-danger="mng_eval_status=='rejected'">
+                                    <field name="employee_id" style="pointer-events:none"/>
+                                    <field name="period_id" style="pointer-events:none"/>
+                                    <field name="manager_id" style="pointer-events:none"/>
+                                    <field name="general_manager_id" style="pointer-events:none"/>
+                                    <field name="first_line_manager_id" style="pointer-events:none"/>
+                                    <field name="state" style="pointer-events:none"/>
+                                    <field name="mng_eval_status" style="pointer-events:none"/>
+                                    <field name="mng_score" style="pointer-events:none"/>
+                                    <field name="general_mng_score" style="pointer-events:none"/>
+                                    <field name="lm_score" style="pointer-events:none"/>
+                                    <field name="final_score" style="pointer-events:none"/>
+                                    <button name="open_one2many_line" type="object" class="fa fa-file-text"/>
+                                    </tree>
+                              </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- general manager panel list view -->
+    <record id="view_general_manager_panel_tree" model="ir.ui.view">
+        <field name="name">general.manager.panel.list</field>
+        <field name="model">general.manager.panel</field>
+        <field name="arch" type="xml">
+           <tree string="General Manager Panel">
+              <field name="general_manager_id"/>
+              <field name="period_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- general manager panel form view -->
+    <record id="view_general_manager_panel_form" model="ir.ui.view">
+    <field name="name">general.manager.panel.form</field>
+    <field name="model">general.manager.panel</field>
+    <field name="arch" type="xml">
+        <form string="General Manager Panel">
+            <header>
+                <field name="state" widget="statusbar" statusbar_visible="draft,open_for_gm_mng,done"/>
+                <!-- By hitting the approve_all_evaluation button, all validation needs to be checked
+                and all distribution range and their actual quantity is shown -->
+                <button name="all_general_manager_evaluated" string="Approve All Evaluation" type="object" class="oe_highlight"/>
+                <button name="calculate_distribution" string="Calculate Distribution" type="object" class="oe_highlight"/>
+            </header>
+            <sheet>
+                <group>
+                    <group>
+                        <field name="general_manager_id" />
+                        <field name="period_id" />
+
+                    </group>
+                    <group>
+                        <field name="approved_deviation" />
+                        <field name="first_deviation_count" />
+                    </group>
+                </group>
+                <notebook>
+                    
+                    <page string="Evaluations">
+                        <field name="evaluation_ids" context="{'form_view_ref': 'ext_evaluation.evaluation_evaluation_view_form'}" >
+                            <tree string="Evaluation list" decoration-danger="mng_eval_status=='rejected'">
+                                <field name="employee_id" style="pointer-events:none"/>
+                                <field name="period_id" style="pointer-events:none"/>
+                                <field name="manager_id" style="pointer-events:none"/>
+                                <field name="general_manager_id" style="pointer-events:none"/>
+                                <field name="first_line_manager_id" style="pointer-events:none"/>
+                                <field name="state" style="pointer-events:none"/>
+                                <field name="mng_eval_status" style="pointer-events:none"/>
+                                <field name="mng_score" style="pointer-events:none"/>
+                                <field name="general_mng_score" style="pointer-events:none"/>
+                                <field name="lm_score" style="pointer-events:none"/>
+                                <field name="second_deviation" style="pointer-events:none" widget="percentage" options="{'precision': 2}"/>
+                                <field name="final_score" style="pointer-events:none"/>
+                                <button name="open_one2many_line" type="object" class="fa fa-file-text"/>
+                                </tree>
+                            </field>
+                    </page>
+                    <page string="Final Score Distribution">
+                        <field name="final_score_distribution_ids">
+                            <tree string="Final Score Distribution list">
+                                <field name="period_id"/>
+                                <field name="lower_limit"/>
+                                <field name="upper_limit"/>
+                                <field name="percentage"/>
+                                <field name="min_count"/>
+                                <field name="max_count"/>
+                                <field name="actual_count"/>
+                                <field name="status"/>
+                                </tree>
+                            </field>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+
+
+
+    <!-- line manager panel list view -->
+    <record id="view_line_manager_panel_tree" model="ir.ui.view">
+        <field name="name">line.manager.panel.list</field>
+        <field name="model">line.manager.panel</field>
+        <field name="arch" type="xml">
+           <tree string="Line Manager Panel">
+              <field name="first_line_manager_id"/>
+              <field name="period_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- line manager panel form view -->
+    <record id="view_line_manager_panel_form" model="ir.ui.view">
+    <field name="name">line.manager.panel.form</field>
+    <field name="model">line.manager.panel</field>
+    <field name="arch" type="xml">
+        <form string="Line Manager Panel">
+            <header>
+                <field name="state" widget="statusbar" statusbar_visible="draft,open_for_lm_mng,done"/>
+                <!-- By hitting the approve_all_evaluation button, all validation needs to be checked
+                and all distribution range and their actual quantity is shown -->
+                <button name="all_line_manager_evaluated" string="Approve All Evaluation" type="object" class="oe_highlight"/>
+                <!-- <button name="calculate_distribution" string="Calculate Distribution" type="object" class="oe_highlight"/> -->
+            </header>
+            <sheet>
+                <group>
+                    <group>
+                        <field name="first_line_manager_id" />
+                        <field name="period_id" />
+                    </group>
+                    <group>
+                        <field name="approved_deviation" />
+                        <field name="fifth_deviation_count" />
+                    </group>
+                </group>
+                <notebook>
+                    
+                    <page string="Evaluations">
+                        <field name="evaluation_ids" context="{'form_view_ref': 'ext_evaluation.evaluation_evaluation_view_form'}">
+                            <tree string="Evaluation list">
+                                <field name="employee_id" style="pointer-events:none"/>
+                                <field name="period_id" style="pointer-events:none"/>
+                                <field name="manager_id" style="pointer-events:none"/>
+                                <field name="general_manager_id" style="pointer-events:none"/>
+                                <field name="first_line_manager_id" style="pointer-events:none"/>
+                                <field name="state" style="pointer-events:none"/>
+                                <field name="mng_eval_status" style="pointer-events:none"/>
+                                <field name="mng_score" style="pointer-events:none"/>
+                                <field name="general_mng_score" style="pointer-events:none"/>
+                                <field name="lm_score" style="pointer-events:none"/>
+                                <field name="fourth_deviation" style="pointer-events:none" widget="percentage" options="{'precision': 2}"/>
+                                <field name="final_score" style="pointer-events:none"/>
+                                <button name="open_one2many_line" type="object" class="fa fa-file-text"/>
+                                </tree>
+                            </field>
+                    </page>
+                    <!-- <page string="Final Score Distribution">
+                        <field name="final_score_distribution_ids">
+                            <tree string="Final Score Distribution list">
+                                <field name="period_id"/>
+                                <field name="lower_limit"/>
+                                <field name="upper_limit"/>
+                                <field name="percentage"/>
+                                <field name="min_count"/>
+                                <field name="max_count"/>
+                                <field name="actual_count"/>
+                                <field name="status"/>
+                                </tree>
+                            </field>
+                    </page> -->
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+
+
+
+
+
+    <!-- normal distribution list view -->
+    <record id="view_normal_distribution_tree" model="ir.ui.view">
+        <field name="name">normal.distribution.list</field>
+        <field name="model">normal.distribution</field>
+        <field name="arch" type="xml">
+           <tree string="Normal Distribution">
+              <field name="period_id"/>
+              <field name="distribution_type"/>
+              <field name="is_active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- normal distribution form view -->
+    <record id="view_normal_distribution_form" model="ir.ui.view">
+        <field name="name">normal.distribution.form</field>
+        <field name="model">normal.distribution</field>
+        <field name="arch" type="xml">
+            <form string="Normal Distribution">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="period_id"/>
+                            <field name="distribution_type"/>
+                            <field name="is_active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Normal Distribution Items">
+                            <field name="distribution_items_ids" >
+                                <tree string="Distribution Items" editable="bottom">
+                                    <field name="percentage" />
+                                    <field name="lower_limit" />
+                                    <field name="upper_limit" />
+                                    <field name="name"/>
+                                    </tree>
+                              </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+    <!-- normal distribution items list view -->
+    <record id="view_normal_distribution_items_tree" model="ir.ui.view">
+        <field name="name">normal.distribution.items.list</field>
+        <field name="model">normal.distribution.items</field>
+        <field name="arch" type="xml">
+           <tree string="Normal Distribution Items">
+              <field name="name"/>
+              <field name="percentage"/>
+              <field name="lower_limit"/>
+              <field name="upper_limit"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+ <!-- violation configuration list view -->
+ <record id="view_violation_configuration_tree" model="ir.ui.view">
+    <field name="name">violation.configuration.list</field>
+    <field name="model">violation.configuration</field>
+    <field name="arch" type="xml">
+       <tree string="Violation Configuration">
+          <field name="name"/>
+          <field name="period_id"/>
+        </tree>
+    </field>
+</record>
+
+<!-- violation configuration form view -->
+<record id="view_violation_configuration_form" model="ir.ui.view">
+    <field name="name">violation.configuration.form</field>
+    <field name="model">violation.configuration</field>
+    <field name="arch" type="xml">
+        <form string="Violation Configuration">
+            <group>
+                <group>
+                    <field name="period_id"/>
+                    <field name="name"/>
+                </group>
+                <group>
+                    <field name="second_deviation_limit"/>
+                    <field name="fourth_deviation_limit"/>
+                    <field name="first_deviation_limit"/>
+                    <field name="fifth_deviation_limit"/>
+                </group>
+            </group>
+            
+        </form>
+    </field>
+</record>
+
+
+<!-- actions for violation configuration -->
+<record id="violation_configuration_action" model="ir.actions.act_window">
+    <field name="name">Violation Configuration</field>
+    <field name="res_model">violation.configuration</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+    
+
+
+
+
+<!-- <record id="evaluation_evaluation_form_action" model="ir.actions.act_window">
+    <field name="name">Evaluation</field>
+    <field name="res_model">evaluation.evaluation</field>
+    <field name="context">{'res_id': self.id}</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">form</field>
+    <field name="target">current</field>
+</record> -->
+
+
+
+<!-- actions for approver panel -->
+<record id="approver_panel_action" model="ir.actions.act_window">
+    <field name="name">Approver Panel</field>
+    <field name="res_model">approver.panel</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<!-- actions for general manager panel -->
+<record id="general_manager_panel_action" model="ir.actions.act_window">
+    <field name="name">General Manager Panel</field>
+    <field name="res_model">general.manager.panel</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<!-- actions for normal distribution -->
+<record id="normal_distribution_action" model="ir.actions.act_window">
+    <field name="name">Normal Distribution</field>
+    <field name="res_model">normal.distribution</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<!-- actions for normal distribution items-->
+<record id="normal_distribution_items_action" model="ir.actions.act_window">
+    <field name="name">Normal Distribution Items</field>
+    <field name="res_model">normal.distribution.items</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<!-- actions for line manager panel -->
+<record id="line_manager_panel_action" model="ir.actions.act_window">
+    <field name="name">Line Manager Panel</field>
+    <field name="res_model">line.manager.panel</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+
+
+
+
+
+
+  <!-- Top menu item -->
+    
+  <menuitem name="Evaluation" id="ext_evaluation.menu_evaluation_root" sequence="1" 
+  groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_employee,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager"/>
+
+  <!-- menu Evaluation -->
+  
+  <menuitem name="Evaluation" id="ext_evaluation.menu_evaluation_parent" parent="ext_evaluation.menu_evaluation_root" 
+  groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_employee,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager,ext_hr_employee.group_timesheet_approver"/>
+
+  <!-- menu Approver Panel -->
+
+  <menuitem name="Timesheet Approver Panel" id="ext_evaluation.menu_approver_panel" parent="ext_evaluation.menu_evaluation_parent"
+              action="approver_panel_action" sequence="30" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_timesheet_approver"
+              />
+
+  <!-- menu General Manager Panel -->
+
+  <menuitem name="General Manager Panel" id="ext_evaluation.menu_general_manager_panel" parent="ext_evaluation.menu_evaluation_parent"
+              action="general_manager_panel_action" sequence="31" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_general_manager"
+              />
+
+
+<menuitem id="ext_evaluation.normal_distribution" name="Normal Distribution" parent="menu_evaluation_configuration_sub_menu"
+sequence="17" groups="ext_evaluation.group_evaluation_admin" action="normal_distribution_action"/>
+
+<menuitem id="ext_evaluation.normal_distribution_items" name="Normal Distribution Items" parent="menu_evaluation_configuration_sub_menu"
+sequence="18" groups="ext_evaluation.group_evaluation_admin" action="normal_distribution_items_action"/>
+          
+  <!-- menu Line Manager Panel -->
+
+  <menuitem name="Line Manager Panel" id="ext_evaluation.menu_line_manager_panel" parent="ext_evaluation.menu_evaluation_parent"
+              action="line_manager_panel_action" sequence="32" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager"
+              />
+
+<menuitem id="menu_violation_configuration" name="Violation Configuration" parent="menu_evaluation_configuration_sub_menu"
+sequence="33" groups="ext_evaluation.group_evaluation_admin" action="violation_configuration_action"/>              
+    
+
+</odoo>
+

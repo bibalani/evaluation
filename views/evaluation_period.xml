@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+            <!-- period list views -->
+
+    <record id="view_evaluation_period_tree" model="ir.ui.view">
+        <field name="name">evaluation.period.tree</field>
+        <field name="model">evaluation.period</field>
+        <field name="arch" type="xml">
+            <tree string="Evaluation Period">
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="score_type_id"/>
+                <field name="evaluation_status"/>
+                <field name="is_active"/>
+            </tree>
+        </field>
+    </record>
+
+            <!-- period form view -->
+
+    <record id="evaluation_period_view_form" model="ir.ui.view">
+        <field name="name">evaluation.period.form</field>
+        <field name="model">evaluation.period</field>
+        <field name="arch" type="xml">
+            <form string="Evaluation Period">
+                <sheet>
+                    <group>
+                    <group>
+                        <field name="is_active"/>
+                        <field name="name"/>
+                        <field name="evaluation_status"/>
+                    </group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="score_type_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- score type list view -->
+
+    <record id="view_evaluation_score_type_tree" model="ir.ui.view">
+        <field name="name">evaluation.score.type.tree</field>
+        <field name="model">evaluation.score.type</field>
+        <field name="arch" type="xml">
+            <tree string="Score Type">
+                <field name="name"/>
+                <field name="is_reward_based"/>
+            </tree>
+        </field>
+    </record>
+
+           <!-- score type form view -->
+
+    <record id="evaluation_score_type_view_form" model="ir.ui.view">
+        <field name="name">evaluation.score.type.form</field>
+        <field name="model">evaluation.score.type</field>
+        <field name="arch" type="xml">
+            <form string="Score Type">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="is_reward_based"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- actions for evaluation period-->
+
+    <record id="evaluation_period_action" model="ir.actions.act_window">
+        <field name="name">Period</field>
+        <field name="res_model">evaluation.period</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- actions for evaluation score type-->
+
+    <record id="evaluation_score_type_action" model="ir.actions.act_window">
+        <field name="name">Score Type</field>
+        <field name="res_model">evaluation.score.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- Menus -->
+
+    
+    <menuitem id="menu_evaluation_configuration_sub_menu" name="Configuration" parent="ext_evaluation.menu_evaluation_root" 
+    sequence="12" groups="ext_evaluation.group_evaluation_admin" />
+
+
+    <menuitem id="menu_evaluation_period_view" name="Period" parent="menu_evaluation_configuration_sub_menu" 
+    sequence="10" groups="ext_evaluation.group_evaluation_admin" action="evaluation_period_action"/>
+
+    <menuitem id="menu_evaluation_score_type_view" name="Score Type" parent="menu_evaluation_configuration_sub_menu"
+     sequence="11" groups="ext_evaluation.group_evaluation_admin" action="evaluation_score_type_action"/>
+
+</odoo>

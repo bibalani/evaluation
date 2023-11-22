@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List of Evaluation Objectives -->
+
+    <record id="view_evaluation_objectives_tree" model="ir.ui.view">
+        <field name="name">evaluation.objectives.tree</field>
+        <field name="model">evaluation.objectives</field>
+        <field name="arch" type="xml">
+            <tree string="Evaluation Objectives">
+                <field name="type_of_category_item"/>
+                <field name="name"/>
+                <field name="lm_name"/>
+                <field name="obj_type"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View for Evaluation Objectives -->
+
+    <record id="evaluation_objectives_view_form" model="ir.ui.view">
+        <field name="name">evaluation.objectives.form</field>
+        <field name="model">evaluation.objectives</field>
+        <field name="arch" type="xml">
+            <form string="Evaluation Objectives">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="new,running,closed"/>
+                    <button name="send_to_running" states="new,closed" string="Run" type="object" class="oe_highlight" confirm="Are you sure you want to Run ? (In running state you can not Edit or Delete the objective!)"
+                     groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_obj_creator,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager"/>
+                    <button name="send_to_close" states="running" string="Close" type="object" class="oe_highlight" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_obj_creator,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager"/>
+                </header>
+                <sheet>
+                   
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="type_of_category_item" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                            <field name="is_fix"/>
+                            
+                            
+                        </group>
+                        <group>
+                            <field name="obj_type"/>
+                            <field name="lm_name" attrs="{'required':[('obj_type','!=','public')]}" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                            <field name="function_name"/>
+                        </group>
+                    </group>
+                    <b style="text-align: center; color: #800000;">Note: Just in Running state you can use objective</b>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- List of Evaluation Category -->
+
+    <record id="view_evaluation_category_list" model="ir.ui.view">
+        <field name="name">evaluation.category.list</field>
+        <field name="model">evaluation.category</field>
+        <field name="arch" type="xml">
+            <tree string="Evaluation Category">
+                <field name="name"/>
+                <field name="is_active"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <!-- Form View for Evaluation Category -->
+    <record id="evaluation_category_view_form" model="ir.ui.view">
+        <field name="name">evaluation.category.form</field>
+        <field name="model">evaluation.category</field>
+        <field name="arch" type="xml">
+            <form string="Evaluation Category">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <!-- <field name="fix_template"/> -->
+                        </group>
+                        <group>
+                            <field name="is_active"/>
+                        </group>
+                    </group>
+                    <field name="category_items" nolabel="1">
+                        <tree string="Category Items" editable="bottom">
+                            <field name="name"/>
+                            <field name="percentage" sum="Total"/>
+                            <field name="min_count" />
+                            <field name="is_fix"/>
+                            <field name="is_active"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <div class="oe_chatter" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_obj_creator,ext_evaluation.group_evaluation_hr">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- actions of Evaluation Objectives-->
+
+    <!-- <record id="evaluation_objectives_action" model="ir.actions.act_window">
+        <field name="name">Objectives</field>
+        <field name="res_model">evaluation.objectives</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record> -->
+    <record id="evaluation_objectives_action" model="ir.actions.server">
+        <field name="name">Objectives</field>
+        <field name="type">ir.actions.server</field>
+        <field name="res_model">evaluation.objectives</field>
+        <field name="model_id" ref="ext_evaluation.model_evaluation_objectives"/>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="state">code</field>
+        <field name="code">
+        action=env['evaluation.objectives'].load_eval_obj_action()
+        </field>
+    </record>
+
+    <!-- actions of Evaluation Category-->
+
+    <record id="evaluation_category_action" model="ir.actions.act_window">
+        <field name="name">category</field>
+        <field name="res_model">evaluation.category</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+      <record id="evaluation_category_items_action" model="ir.actions.act_window">
+        <field name="name">category item</field>
+        <field name="res_model">evaluation.category.items</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menus -->
+
+    <menuitem id="menu_evaluation_objectives_view" name="Objectives" parent="menu_evaluation_parent" sequence="8" 
+    groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_obj_creator,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager" action="evaluation_objectives_action"/>
+
+    <menuitem id="menu_evaluation_category_view" name="Category" parent="ext_evaluation.menu_evaluation_configuration_sub_menu"  
+    groups="ext_evaluation.group_evaluation_admin" action="evaluation_category_action"/>
+   <menuitem id="menu_evaluation_category_items_view" name="Category Item" parent="ext_evaluation.menu_evaluation_configuration_sub_menu"
+    groups="ext_evaluation.group_evaluation_admin" action="evaluation_category_items_action"/>
+
+
+
+    <record id="view_inherit_objective_hr" model="ir.ui.view">
+            <field name="name">view.inherit.objective.hr</field>
+            <field name="model">evaluation.objectives</field>
+            <field name="inherit_id" ref="ext_evaluation.evaluation_objectives_view_form"/>
+            <field name="groups_id" eval="[(6,0,[ref('ext_evaluation.group_evaluation_hr'),ref('ext_evaluation.group_evaluation_admin')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='obj_type']" position="attributes">
+                     <attribute name="attrs">  {'readonly':['|',('state','not in',['new'])]}  </attribute>
+                </xpath>
+                <xpath expr="//field[@name='lm_name']" position="attributes">
+                    <attribute name="attrs">  {'readonly':['|',('state','not in',['new']),('obj_type','in',['public'])]}  </attribute>
+                </xpath>
+
+            </field>
+    </record>
+
+</odoo>

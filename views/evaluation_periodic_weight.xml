@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <odoo>
+
+
+
+    <!-- WTA Periodic Weight -->
+
+
+    <record model="ir.ui.view" id="wta_periodic_perc_list">
+      <field name="name">WTA Periodic Perc List</field>
+      <field name="model">evaluation.periodic_weight</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+          <field name="evaluation_period_id"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="wta_periodic_perc_form">
+      <field name="name">WTA Periodic Perc Form</field>
+      <field name="model">evaluation.periodic_weight</field>
+      <field name="arch" type="xml">
+        <form>
+            <header>
+              <field name="state" widget="statusbar" statusbar_visible="draft,publish"/>
+
+                <button name="get_employees" state = "draft" string="Get Employees" icon="fa-users" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-info" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+                <button name="update_wta_weight" state = "draft" string="Update Weight" icon="fa-refresh" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-info" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+                <button name="send_to_publish" state = "draft" string="Publish" icon="fa-check-circle" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-success" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+
+            </header>
+            <sheet>
+              <group>
+              <group>
+                <field name="name" />
+              </group>
+
+                <group>
+                  <field name="evaluation_period_id" domain="[('is_active','=',True)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </group>
+              </group>
+              <notebook>
+                <page name="employees" string="Employees">
+                  <field name="employee_ids" options="{'no_create_edit': True,'no_open': True}">
+                    <tree>
+                      <field name="name"/>
+                    </tree>
+                  </field>
+                </page>
+                <page name="weight_lines" string="Weight Lines">
+                  <field name="line_ids" options="{'no_create_edit': True,'no_open': True}">
+                    <tree>
+                      <field name="employee_id"/>
+                      <field name="value"/>
+                      <!-- <field name="analytic_account_id"/> -->
+                      <field name="analytic_short_name"/>
+                      <field name="state"/>
+                    </tree>
+                  </field>
+                </page>
+              </notebook>
+            </sheet>
+        </form>
+      </field>
+    </record>
+
+
+    <!-- WTA Periodic Weight Line -->
+
+
+    <record model="ir.ui.view" id="wta_periodic_perc_line_list">
+      <field name="name">Evaluation Perc Line List</field>
+      <field name="model">evaluation.periodic_weight_line</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="parent_id"/>
+          <field name="evaluation_period_id"/>
+          <field name="employee_id"/>
+          <field name="value"/>
+          <!-- <field name="analytic_account_id"/> -->
+          <field name="analytic_short_name"/>
+          <field name="project_id"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="wta_periodic_perc_line_form">
+      <field name="name">WTA Periodic Perc Form</field>
+      <field name="model">evaluation.periodic_weight_line</field>
+      <field name="arch" type="xml">
+        <form>
+            <header>
+              <field name="state" widget="statusbar" statusbar_visible="draft,publish"/>
+
+                <button name="send_to_done" state = "draft" string="Done" icon="fa-check-circle" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-success" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+            </header>
+            <sheet>
+              <group>
+                <group>
+                  <field name="parent_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                  <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </group>
+                <group>
+                  <field name="evaluation_period_id" domain="[('is_active','=',True)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                  <field name="value" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                  <field name="analytic_account_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                  <field name="project_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </group>
+              </group>
+            </sheet>
+        </form>
+      </field>
+    </record>
+
+
+
+
+    <record model="ir.actions.act_window" id="evaluation_wta_periodic_weight_action_window">
+      <field name="name">WTA Periodic Weight</field>
+      <field name="res_model">evaluation.periodic_weight</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="evaluation_wta_periodic_weight_line_action_window">
+      <field name="name">WTA Periodic Weight Line</field>
+      <field name="res_model">evaluation.periodic_weight_line</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+    <menuitem name="WTA Periodic Weight" id="wta_periodic_weight_menuitem" parent="menu_evaluation_fix_items"
+              action="evaluation_wta_periodic_weight_action_window" groups="group_evaluation_admin"/>
+    <menuitem name="WTA Periodic Weight Line" id="wta_periodic_weight_line_menuitem" parent="menu_evaluation_fix_items"
+              action="evaluation_wta_periodic_weight_line_action_window" groups="group_evaluation_admin"/>
+
+</odoo>

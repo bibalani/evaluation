@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- score type list view -->
+
+    <record id="view_evaluation_score_tree" model="ir.ui.view">
+        <field name="name">evaluation.score.tree</field>
+        <field name="model">evaluation.score</field>
+        <field name="arch" type="xml">
+            <tree string="Evaluation Score">
+                <field name="employee_id"/>
+                <field name="period_id"/>
+                <field name="score_type_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+           <!-- score type form view -->
+
+    <record id="evaluation_score_type_view_form" model="ir.ui.view">
+        <field name="name">evaluation.score.form</field>
+        <field name="model">evaluation.score</field>
+        <field name="arch" type="xml">
+            <form string="Evaluation Score">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,validated,processing,done"/>
+                    <button name="send_to_validate" states="draft" string="Validate" type="object" 
+                    class="oe_highlight" groups="ext_evaluation.group_evaluation_admin"/>
+                    <button name="send_to_process" states="validated" string="Send to Processing" type="object" 
+                    class="oe_highlight" groups="ext_evaluation.group_evaluation_admin"/>
+                    <button name="send_to_done" states="processing" string="done" type="object" 
+                    class="oe_highlight" groups="ext_evaluation.group_evaluation_admin"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                            <field name="period_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                        </group>
+                        <group>
+                            <field name="score_type_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                            <field name="value"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+    <!-- actions for evaluation score type-->
+
+    <record id="evaluation_score_action" model="ir.actions.act_window">
+        <field name="name">Evaluation Score </field>
+        <field name="res_model">evaluation.score</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- Menus -->
+
+    
+    <menuitem id="menu_evaluation_performance_sub_menu" name="Performance Evaluation" parent="ext_evaluation.menu_evaluation_root" 
+    sequence="12" groups="ext_evaluation.group_evaluation_admin" />
+
+    <menuitem id="menu_evaluation_score_view" name="Evaluation Score" parent="menu_evaluation_performance_sub_menu" sequence="12"
+     groups="ext_evaluation.group_evaluation_admin" action="evaluation_score_action"/>
+
+</odoo>

@@ -1,0 +1,534 @@
+<odoo>
+<data>
+    <!-- Evalouation list view  -->
+
+    <record id="view_evaluation_evaluation_tree" model="ir.ui.view">
+        <field name="name">evaluation list</field>
+        <field name="model">evaluation.evaluation</field>
+        <field name="arch" type="xml">
+           <tree string="Evaluation list">
+              <field name="employee_id"/>
+              <field name="period_id"/>
+              <field name="manager_id"/>
+              <field name="general_manager_id"/>
+              <field name="first_line_manager_id"/>
+              <field name="state" />
+              <field name="final_score" />
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Form View for Evaluation Form -->
+
+    <record id="evaluation_evaluation_view_form" model="ir.ui.view">
+        <field name="name">evaluation.evaluation.form</field>
+        <field name="model">evaluation.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Evaluation Form">
+            <!-- <sheet> -->
+              <header>
+                <field name="state" widget="statusbar" statusbar_visible="draft,waiting_for_mng,waiting_for_lm,emp_eval,mng_eval,emp_review,done"/>
+                
+                <button name="send_to_manager" state = "draft" string="Employee Approve" type="object" attrs="{'invisible':['|','|','|',('evaluation_status','!=','normal'),('state','!=','draft'),('check_access_right','=',False)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+                <button name="send_to_manager" state = "draft" string="Admin Approve" type="object" attrs="{'invisible':['|',('state','!=','draft'),('check_access_right_admin','=',False)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+                <!-- <button name="send_to_manager" string="Employee Approve" type="object" attrs="{'invisible':['|',('evaluation_status','!=','normal'),('state','!=','draft')]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_employee,ext_evaluation.group_evaluation_hr"/> -->
+                <button name="send_to_lm" string="Manager Approve" type="object" attrs="{'invisible':['|','|',('evaluation_status','!=','normal'),('state','!=','waiting_for_mng'),('check_access_right_manager','=',False)]}" class="oe_highlight" 
+                groups="ext_hr_employee.group_timesheet_approver"/>
+                <button name="send_to_lm" string="Admin Approve" type="object" attrs="{'invisible':['|',('state','!=','waiting_for_mng'),('check_access_right_admin','=',False)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+
+                <button name="send_emp_eval"  string="LM approve" type="object" attrs="{'invisible':['|','|',('evaluation_status','not in','normal'),('state','!=','waiting_for_lm'),('check_access_right_line','=',False)]}" class="oe_highlight" 
+                groups="ext_hr_employee.group_line_manager"/>
+                <button name="send_emp_eval"  string="Admin approve" type="object" attrs="{'invisible':['|',('state','!=','waiting_for_lm'),('check_access_right_admin','=',False)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+
+                <button name="manager_send_to_draft"  string="Send to Draft" type="object" class="oe_highlight" attrs="{'invisible':['|','|',('evaluation_status','not in','normal'),('state','!=','waiting_for_mng'),('check_access_right_manager','=',False)]}" 
+                confirm="Are you sure you want send to draft ?" groups="ext_hr_employee.group_timesheet_approver"/>
+                <button name="manager_send_to_draft"  string="Admin Send to Draft" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','waiting_for_mng'),('check_access_right_admin','=',False)]}" 
+                confirm="Are you sure you want send to draft ?" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+                
+                <button name="lm_send_to_draft" states="waiting_for_lm" string="Send to Draft" type="object" class="oe_highlight" attrs="{'invisible':['|','|',('evaluation_status','not in','normal'),('state','!=','waiting_for_lm'),('check_access_right_line','=',False)]}"
+                confirm="Are you sure you want send to draft ?" groups="ext_hr_employee.group_line_manager"/>
+                <!-- ['waiting_for_lm','waiting_for_general_mng','waiting_for_mng','emp_eval']),('check_access_right_line','=',False)] -->
+                <button name="lm_send_to_draft" states="waiting_for_lm" string="Admin Send to Draft" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','waiting_for_lm'),('check_access_right_admin','=',False)]}"
+                confirm="Are you sure you want send to draft ?" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+
+                <button name="emp_send_to_draft" states="emp_eval" string="Admin Send to Draft" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','emp_eval'),('check_access_right_admin','=',False)]}"
+                confirm="Are you sure you want send to draft ?" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+
+                <!-- <button name="hr_send_to_lm" string="Send to LM" type="object" class="oe_highlight" attrs="{'invisible':['|',('evaluation_status','!=','normal'),('state','!=','emp_eval')]}"
+                confirm="Are you sure you want send to Lm state?" groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+                 -->
+                <button name="send_manager_eval"  string="Employee Evaluate" type="object" attrs="{'invisible':['|','|',('evaluation_status','!=','self_assessment'),('state','!=','emp_eval'),('check_access_right','=',False)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_employee,ext_evaluation.group_evaluation_hr"/>
+                                                                                          
+                <button name="manager_evaluated" string="Manager Evaluated" type="object"  attrs="{'invisible':['|','|','|',('evaluation_status','!=','manager_assessment'),('state','not in',('mng_eval','claim')),('check_access_right_manager','=',False),('manager_sign','=',True)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_hr_employee.group_timesheet_approver,ext_evaluation.group_evaluation_hr"/>
+                <!-- <button name="general_manager_evaluated" string="General Manager Evaluated" type="object"  attrs="{'invisible':['|','|','|',('evaluation_status','!=','manager_assessment'),('state','not in',('mng_eval','claim')),('check_access_right_general_manager','=',False),('general_manager_sign','=',True)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_hr_employee.group_general_manager,ext_evaluation.group_evaluation_hr"/> -->
+                <button name="reject_manager_score" string="Reject Manager Score" type="object"  attrs="{'invisible':['|','|','|','|',('evaluation_status','!=','manager_assessment'),('state','not in',('mng_eval','claim')),('check_access_right_general_manager','=',False),('general_manager_sign','=',True),('mng_eval_status','in',('rejected', 'draft'))]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_hr_employee.group_general_manager,ext_evaluation.group_evaluation_hr"/>
+                <!-- <button name="lm_evaluated" string="LM Evaluated" type="object" attrs="{'invisible':['|','|','|',('lm_sign','=',True),('evaluation_status','!=','manager_assessment'),('state','not in',('mng_eval','claim')),('check_access_right_line','=',False)]}" 
+                groups="ext_evaluation.group_evaluation_admin,ext_hr_employee.group_line_manager,ext_evaluation.group_evaluation_hr" class="oe_highlight" /> -->
+                
+                
+                <button name="reject_to_emp" string="Reject to Employee" type="object" attrs="{'invisible':['|',('evaluation_status','not in','self_assessment'),('state','!=','mng_eval')]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+<!-- 
+                <button name="send_to_claim" string="Claim" type="object" attrs="{'invisible':['|','|','|',('claim','=',True),('evaluation_status','not in','manager_assessment'),('state','!=','emp_review'),('check_access_right','=',False)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_employee"/> -->
+
+                <button name="send_to_done" string="Done" type="object" class="oe_highlight" attrs="{'invisible':['|','|',('evaluation_status','not in','manager_assessment'),('state','!=','emp_review'),('check_access_right','=',False)]}"
+                groups="ext_evaluation.group_evaluation_employee"/>
+                <button name="send_to_done" string="Admin send to Done" type="object" class="oe_highlight" attrs="{'invisible':['|',('evaluation_status','not in','manager_assessment'),('check_access_right_admin','=',False)]}"
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+                <button name="reject_to_manager" string="Reject to Manager" type="object" class="oe_highlight" attrs="{'invisible':['|','|',('evaluation_status','not in','manager_assessment'),('state','not in',('emp_review','done')),('check_access_right_admin','=',False)]}"
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/> 
+                <button name="force_send_manager_eval"  string="Force send manager Eval" type="object" attrs="{'invisible':['|','|',('evaluation_status','!=','manager_assessment'),('state','!=','emp_eval'),('check_access_right_admin','=',False)]}" class="oe_highlight" 
+                groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr" confirm="Are you sure you want send this evaluation to Manager Evaluation state?"/>
+              </header>
+              <group>
+              <group>
+                <field name="employee_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                <field name="period_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                <field name="mng_eval_status" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+
+                <field name="tmp_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                <field name="evaluation_status" groups="ext_evaluation.group_evaluation_admin"/>
+                <button name="get_template_value" states="draft" string="Get Template Items" type="object" class="oe_highlight" />
+              </group>
+              <group>
+                <field name="first_line_manager_id" options="{'no_create': True, 'no_edit': True,'no_open': True}" attrs="{'readonly':['|',('state','in',('mng_eval','emp_review','claim','done')),('check_access_right_admin','=',False),'|','|',('state','in',('emp_review','claim','done')),('check_access_right_admin','=',False),('lm_sign','=',True)]}"/>
+                <field name="second_line_manager_id" string="2nd Line Manager" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                <field name="general_manager_id" string="General Manager" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                <field name="manager_id" options="{'no_create': True, 'no_edit': True,'no_open': True}" attrs="{'readonly':['|',('state','in',('mng_eval','emp_review','claim','done')),('check_access_right_admin','=',False),'|','|',('state','in',('emp_review','claim','done')),('check_access_right_admin','=',False),('manager_sign','=',True)]}"/>
+                <!-- <field name="approver_panel_id" string="Timesheet Approver Panel"/>
+                <field name="general_manager_panel_id" string="General Manager Panel"/>
+                <field name="line_manager_panel_id" string="Line Manager Panel"/>  -->
+                <field name="check_access_right" invisible="1"/>
+                <field name="check_access_right_manager" invisible="1"/>
+                <field name="check_access_right_general_manager" invisible="1"/>
+                <field name="check_access_right_line" invisible="1"/>
+                <field name="check_access_right_admin" invisible="1"/>
+
+              </group>
+              </group>
+              <function model="account.invoice" name="_onchange_invoice_line_ids">
+              <value eval="[ref('demo_invoice_equipment_purchase')]"/>
+              </function>
+              <notebook>
+              <page string="Objective Items">
+                <field name="obj_items" nolabel="1" options="{'no_create': True, 'no_edit': True}">
+                  <tree string="Objectives Items " editable="bottom" decoration-muted="is_fix == True" decoration-bf="is_fix == True" delete="0">
+<!--                    <field name="domain_category_items_id" invisible="1"/>-->
+
+                    <field name="category_id" attrs="{'readonly': [('is_fix', '=', True)]}" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="obj_item" attrs="{'readonly': [('is_fix', '=', True)]}" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="weight" attrs="{'readonly': [('is_fix', '=', True)]}" />
+                    <field name="target" attrs="{'readonly': [('is_fix', '=', True)]}"/>
+                    <field name="description" attrs="{'readonly': [('is_fix', '=', True)]}"/>
+                    <field name="is_fix" invisible="1"/>
+                    <field name="eval_state" invisible="1"/>
+                    
+                    <button name="unlink"
+                      string="Unlink"
+                      type="object"
+                      class="btn-secondary"
+                      attrs="{'invisible': ['|',('is_fix', '=', True),('eval_state', '!=', 'draft')]}"
+                      icon="fa-trash-o"/>
+
+                  </tree>
+                  <form string="Objectives Items " >
+                  <group>
+                  <group>
+<!--                      <field name="domain_category_items_id" invisible="1"/>-->
+
+                    <field name="category_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="obj_item"  options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="description"/>
+                    </group>
+                    <group>
+                    <field name="weight" />
+                    <field name="target"/>
+                  </group>
+                  </group>
+                  </form>
+                </field>
+                <field name="domain_tmp_ids" invisible="1"/>
+
+              </page>
+              
+              <page string="Evaluation" groups="ext_evaluation.group_evaluation_employee" attrs="{'invisible': ['|',('state','in',('draft','waiting_for_mng','waiting_for_lm')),('check_access_right','=',False)]}">
+              
+                <field name="eval_items" nolabel="1">
+                  <tree string="Evaluation Items " create="0" delete="0" editable="bottom" decoration-muted="is_fix == True" decoration-bf="is_fix == True">
+                    <field name="category_id" />
+                    <field name="obj_item" />
+                    <field name="weight" />
+                    <field name="target"/>
+                    <field name="ind_target_result" attrs="{'readonly': ['|',('is_fix', '=', True),('parent.evaluation_status','not in',('self_assessment'))]}"/>    
+                    <field name="ind_target"/>
+                    <field name="manager_target" readonly="1"/>
+                    <field name="manager_score"/>
+                    <field name="general_manager_target" readonly="1"/>
+                    <field name="general_manager_score"/>
+                    <field name="lm_target" readonly="1" />
+                      <!-- attrs="{'readonly': [('is_fix', '=', True)]}" -->
+                    <field name="lm_score"/>
+                    <field name="is_fix" invisible="1"/>
+                  </tree>
+                  <form string="Evaluation Items ">
+                  <group>
+                  <group>
+                    <field name="category_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="obj_item" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="weight" />
+                    <field name="target"/>
+                  </group>
+                  <group>
+                    <field name="ind_target_result" attrs="{'readonly': [('parent.evaluation_status','not in',('self_assessment'))]}"/>    
+                    <field name="ind_target" />
+                    <field name="manager_target" readonly="1"/>
+                    <field name="manager_score" />
+                    <field name="general_manager_target" readonly="1"/>
+                    <field name="general_manager_score" />
+                    <field name="lm_target" readonly="1"/>
+                    <field name="lm_score" />
+                  </group>
+                  </group>
+                  </form>
+                </field>
+                <group>
+                  <group>
+                    <field name="manager_sign"/>
+                    <field name="general_manager_sign"/>
+                    <field name="lm_sign" />
+                    <field name="claim" invisible="1"/>
+                  </group>
+                  <group>
+                    <field name="manager_comment" readonly="1"/>
+                    <field name="general_manager_comment" readonly="1"/>
+                    <field name="lm_comment" readonly="1"/>
+                    <field name="emp_comment" attrs="{'readonly':[('state','not in',('emp_eval','emp_review'))]}"/>
+                  </group>
+                </group>
+              </page>
+              <!-- Managers' page -->
+              <page string="Evaluation for managers" groups="ext_hr_employee.group_line_manager,ext_hr_employee.group_timesheet_approver,ext_hr_employee.group_general_manager" 
+              attrs="{'invisible': ['|','|',('state','in',('draft','waiting_for_mng','waiting_for_lm','emp_eval')),('evaluation_status','!=','manager_assessment'),('check_access_right_manager','=',False),('check_access_right_general_manager','=',False),
+              '|','|',('check_access_right_line','=',False),('state','in',('draft','waiting_for_mng','waiting_for_lm','emp_eval')),('evaluation_status','!=','manager_assessment')]}">
+              
+                <field name="eval_items_manager" nolabel="1">
+                  <tree string="Evaluation Items" editable="bottom" 
+                     create="0" delete="0" edit="0" decoration-muted="is_fix == True" decoration-bf="is_fix == True">
+                    <field name="eval_id" invisible="1" />
+                    <field name="category_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="obj_item" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="weight" />
+                    <field name="target"/>
+                    <field name="ind_target_result"/>    
+                    <field name="ind_target"/>
+                    <field name="manager_target" attrs="{'readonly':['|',('parent.manager_sign','=',True),('is_fix', '=', True)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="manager_score" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <!-- add ext_hr_employee.group_general_manager to make it works-->
+                    <field name="general_manager_target" attrs="{'readonly':['|','|',('parent.general_manager_sign','=',True),('is_fix', '=', True)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="general_manager_score" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="lm_target" attrs="{'readonly':['|',('parent.lm_sign','=',True),('is_fix', '=', True)]}" groups="ext_hr_employee.group_line_manager"/>
+                    <field name="lm_score" groups="ext_hr_employee.group_line_manager"/>
+                    <field name="is_fix" invisible="1"/>
+                  </tree>
+                  <form string="Evaluation Items" >
+                  <group>
+                  <group>
+                    <field name="eval_id" invisible="1" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="category_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="obj_item" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+                    <field name="weight" />
+                    <field name="target"/>
+                    </group>
+                    <group>
+                    <field name="ind_target_result"/>    
+                    <field name="ind_target" />
+                    <field name="manager_target" attrs="{'invisible':[('parent.check_access_right_manager','=',False)],'readonly':[('parent.manager_sign','=',True)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="manager_score" attrs="{'invisible':[('parent.check_access_right_manager','=',False)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="general_manager_target" attrs="{'invisible':[('parent.check_access_right_general_manager','=',False)],'readonly':[('parent.general_manager_sign','=',True)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="general_manager_score" attrs="{'invisible':[('parent.check_access_right_general_manager','=',False)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="lm_target" attrs="{'invisible':[('parent.check_access_right_line','=',False)],'readonly':[('parent.lm_sign','=',True)]}" groups="ext_hr_employee.group_line_manager"/>
+                    <field name="lm_score" attrs="{'invisible':[('parent.check_access_right_line','=',False)]}" groups="ext_hr_employee.group_line_manager"/>
+                  </group>
+                  </group>
+                  </form>
+
+                </field>
+                <group>
+                  <group>
+                    <field name="manager_sign" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="general_manager_sign" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="lm_sign" groups="ext_hr_employee.group_line_manager"/>
+                    <!-- <field name="claim" invisible="1"/> -->
+                  </group>
+                  <group>
+                    <field name="manager_comment" attrs="{'invisible':[('check_access_right_manager','=',False)],'readonly':[('manager_sign','=',True)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="general_manager_comment" attrs="{'invisible':[('check_access_right_general_manager','=',False)],'readonly':[('general_manager_sign','=',True)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="lm_comment" attrs="{'invisible':[('check_access_right_line','=',False)],'readonly':[('lm_sign','=',True)]}" groups="ext_hr_employee.group_line_manager"/>
+                    <field name="emp_comment" attrs="{'readonly':['|',('state','not in',('emp_eval','emp_review')),('check_access_right','=',False)]}"/>
+                  </group>
+                </group>
+              </page>
+
+              <page string="Score Summary" attrs="{'invisible': [('state','in',('draft','waiting_for_mng','waiting_for_lm'))]}">
+                <group>
+                  <group>
+                  <group>
+                   <!-- groups="ext_evaluation.group_evaluation_employee,ext_hr_employee.group_line_manager,ext_hr_employee.group_timesheet_approver" -->
+                    <field name="ind_total_score"/>
+                     <!-- groups="ext_evaluation.group_evaluation_hr" -->
+                    <field name = "mng_score" groups="ext_hr_employee.group_line_manager,ext_hr_employee.group_timesheet_approver,ext_hr_employee.group_general_manager,ext_evaluation.group_evaluation_admin"/>
+                    <field name = "general_mng_score" groups="ext_hr_employee.group_line_manager,ext_hr_employee.group_timesheet_approver,ext_hr_employee.group_general_manager,ext_evaluation.group_evaluation_admin"/>
+                    <field name="score_id" invisible="1"/> 
+                  </group>
+
+                  <group>
+                   <!-- groups="ext_evaluation.group_evaluation_hr" -->
+                    <field name="lm_score" groups="ext_hr_employee.group_line_manager,ext_hr_employee.group_timesheet_approver,ext_hr_employee.group_general_manager,ext_evaluation.group_evaluation_admin"/>
+                     <!-- groups="ext_evaluation.group_evaluation_employee,ext_hr_employee.group_line_manager,ext_hr_employee.group_timesheet_approver,ext_evaluation.group_evaluation_hr" -->
+                    <field name="final_score"/>
+                  </group>
+                    
+                  <group>
+                   <!-- groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr" -->
+                    <field name="total_score"/>
+                     <!-- groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr" -->
+                    <field name="organization_score"/>
+                  </group>
+                  </group>
+                  <group>
+
+                  </group>
+                </group>
+                
+              </page>
+
+              </notebook>
+          <!-- </sheet> -->
+          <div class="oe_chatter">
+            <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+            <field name="message_ids" widget="mail_thread"/>
+          </div>
+        </form>
+      </field>
+      </record>
+
+
+      <!-- evaluation objectives items tree view-->
+
+    <record id="view_evaluation_obj_items_tree" model="ir.ui.view">
+        <field name="name">evaluation Items</field>
+        <field name="model">evaluation.objectives.items</field>
+        <field name="arch" type="xml">
+           <tree string="Evaluation obj list" create="false" delete="false" edit="false">
+              <field name="category_id" />
+              <field name="obj_item"/>
+              <field name="weight" />
+              <field name="target"/>
+              <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_evaluation_items_tree" model="ir.ui.view">
+        <field name="name">evaluation Items</field>
+        <field name="model">evaluation.items</field>
+        <field name="arch" type="xml">
+           <tree string="Evaluation Items list" create="false" delete="false" edit="false">
+              <field name="eval_id" />
+              <field name="period_id" />
+              <field name="category_id" />
+              <field name="obj_item"/>
+              <field name="weight" />
+              <field name="target"/>
+              <field name="ind_target_result"/>
+              <field name="ind_target" />
+              <field name="manager_target"/>
+              <field name="manager_score" />
+              <field name="general_manager_target"/>
+              <field name="general_manager_score" />
+              <field name="lm_target"/>
+              <field name="lm_score"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_evaluation_evaluation_graph" model="ir.ui.view">
+        <field name="name">evaluation.evaluation.graph</field>
+        <field name="model">evaluation.evaluation</field>
+        <field name="arch" type="xml">
+            <graph string="Evaluation" type="bar" stacked="1">
+              <field name="employee_id"/>
+              <field name="period_id"/>
+              <field name="final_score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+           <!-- evaluation objectives items form view -->
+
+    <record id="evaluation_obj_items_view_form" model="ir.ui.view">
+        <field name="name">evaluation.objectives.items.form</field>
+        <field name="model">evaluation.objectives.items</field>
+        <field name="arch" type="xml">
+            <form string="Evaluation obj list" create="false" delete="false" edit="false">
+                <sheet>
+                    <group>
+                        <field name="category_id"/>
+                        <field name="obj_item"/>
+                        <field name="weight"/>
+                        <field name="target"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="evaluation_manager_view_form" model="ir.ui.view">
+        <field name="name">evaluation.items.manager.form</field>
+        <field name="model">evaluation.items.manager</field>
+        <field name="arch" type="xml">
+            <form string="Manager Evaluation" create="false" delete="false" edit="false">
+                <sheet>
+                    <group>
+                    <group>
+                    <field name="eval_id" invisible="1"/>
+                    <field name="category_id" />
+                    <field name="obj_item" />
+                    <field name="weight" />
+                    <field name="target"/>
+                    </group>
+                    <group>
+                    <field name="ind_target_result"/>    
+                    <field name="ind_target" />
+                    <field name="manager_target" attrs="{'invisible':[('parent.check_access_right_manager','=',False)],'readonly':[('parent.manager_sign','=',True)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="manager_score" attrs="{'invisible':[('parent.check_access_right_manager','=',False)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="general_manager_target" attrs="{'invisible':[('parent.check_access_right_general_manager','=',False)],'readonly':[('parent.general_manager_sign','=',True)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="general_manager_score" attrs="{'invisible':[('parent.check_access_right_general_manager','=',False)]}" groups="ext_hr_employee.group_timesheet_approver"/>
+                    <field name="lm_target" attrs="{'invisible':[('parent.check_access_right_line','=',False)],'readonly':[('parent.lm_sign','=',True)]}" groups="ext_hr_employee.group_line_manager"/>
+                    <field name="lm_score" attrs="{'invisible':[('parent.check_access_right_line','=',False)]}" groups="ext_hr_employee.group_line_manager"/>
+                 
+                    </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_evaluation_evaluation_search" model="ir.ui.view">
+            <field name="name">Evaluation Search</field>
+            <field name="model">evaluation.evaluation</field>
+            <field name="arch" type="xml">
+                <search string="Evaluation">
+                    <field name="employee_id" />
+                    <field name="period_id" />
+                    <group string="Group By">
+                        <filter name="group_state" string="State" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+    <!-- actions of evaluation model-->
+
+   <!-- <record id="evaluation_evaluation_form_action" model="ir.actions.act_window">
+      <field name="name">Evaluation Form</field>
+      <field name="res_model">evaluation.evaluation</field>
+      <field name="context">{'res_id': self.id}</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form,tree</field>
+      <field name="target">current</field>
+      <field name="form_view_id" ref="evaluation_evaluation_view_form"/>
+  </record>  -->
+
+      <record id="evaluation_evaluation_action" model="ir.actions.act_window">
+        <field name="name">Evaluation</field>
+        <field name="res_model">evaluation.evaluation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="search_view_id" ref="view_evaluation_evaluation_search"/>
+      </record>
+
+      <!-- actions of evaluation obj items model-->
+      <record id="evaluation_obj_items_action" model="ir.actions.act_window">
+        <field name="name">Evaluation</field>
+        <field name="res_model">evaluation.objectives.items</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+      
+      <!-- actions of evaluation items model-->
+      <record id="evaluation_items_action" model="ir.actions.act_window">
+        <field name="name">Evaluation Items</field>
+        <field name="res_model">evaluation.items</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+
+     <record id="view_evaluation_change_state" model="ir.ui.view">
+            <field name="name">Change Evaluation State</field>
+            <field name="model">evaluation.change_status_wizard</field>
+            <field name="arch" type="xml">
+                <form string="State Batch Update">
+
+                    <footer>
+                        <button string="Approve All" name="approve_all" type="object" class="oe_highlight"/>
+                        <button string="Cancel" class="btn btn-default" special="cancel"/>
+                    </footer>
+
+                </form>
+            </field>
+     </record>
+
+    <act_window name="State Batch Update"
+                    res_model="evaluation.change_status_wizard"
+                    src_model="evaluation.evaluation"
+                    key2="client_action_multi"
+                    view_mode="form"
+                    view_type="form"
+                    multi="True"
+                    view_id="view_evaluation_change_state"
+                    id="act_view_evaluation_change_state" target="new" groups="ext_evaluation.group_evaluation_admin"
+    />
+      <!-- Top menu item -->
+    
+      <menuitem name="Evaluation" id="ext_evaluation.menu_evaluation_root" sequence="1" 
+      groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_employee,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager"/>
+    
+      <!-- menu Evaluation -->
+      
+      <menuitem name="Evaluation" id="ext_evaluation.menu_evaluation_parent" parent="ext_evaluation.menu_evaluation_root" 
+      groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_employee,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager"/>
+    
+      <!-- menue item for evaluation -->
+      
+      <menuitem name="Evaluation " id="ext_evaluation.menu_evaluation_evaluation" parent="ext_evaluation.menu_evaluation_parent"
+              action="ext_evaluation.evaluation_evaluation_action" sequence="1" 
+              groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_employee,ext_evaluation.group_evaluation_hr,ext_hr_employee.group_line_manager,ext_hr_employee.group_timesheet_approver"/>
+
+
+    <!-- menue item for evaluation obj items-->
+   <menuitem name="Evaluation Objectives Items" id="ext_evaluation.menu_evaluation_obj_items" parent="ext_evaluation.menu_evaluation_parent"
+              action="ext_evaluation.evaluation_obj_items_action" sequence="12" 
+              groups="ext_evaluation.group_evaluation_admin,ext_evaluation.group_evaluation_hr"/>
+
+    <!-- menue item for evaluation obj items-->
+   <menuitem name="Evaluation Items" id="ext_evaluation.menu_evaluation_items" parent="ext_evaluation.menu_evaluation_parent"
+              action="ext_evaluation.evaluation_items_action" sequence="12" 
+              groups="ext_evaluation.group_eval_evaluation_items_viewer"/>
+   
+</data>
+</odoo>

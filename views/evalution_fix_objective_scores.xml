@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+
+    <!-- CPI / SPI Score -->
+
+    <record model="ir.ui.view" id="cpi_spi_scores_import_list">
+      <field name="name">Import CPI / SPI Score List</field>
+      <field name="model">evaluation.cpi_spi_raw_score</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="evaluation_period_id"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="cpi_spi_scores_import_form">
+      <field name="name">Import CPI / SPI Score Form</field>
+      <field name="model">evaluation.cpi_spi_raw_score</field>
+      <field name="arch" type="xml">
+        <form>
+            <header>
+              <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+
+                <button name="open_upload_page" state = "draft" string="Upload Data" icon="fa-upload" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-info" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+                <button name="send_to_done" state = "draft" string="Done" icon="fa-check-circle" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-success" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+                
+            </header>
+            <sheet>
+              <group>
+                <group>
+                  <field name="name" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </group>
+                <group>
+                  <field name="evaluation_period_id"  domain="[('is_active','=',True)]" options="{'no_create_edit': True,'no_open': True}"  attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </group>
+              </group>
+
+              <notebook>
+                <page name="score_lines" string="Score Lines">
+                  <field name="cpi_spi_score_line" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_create_edit': True,'no_open': True}">
+                    <tree>
+                      <field name="wbs_id"/>
+                      <field name="program_manager_id"/>
+                      <field name="project_manager_id"/>
+                      <field name="program_name"/>
+                      <field name="project_name"/>
+                      <!-- <field name="pgmo_id"/>
+                      <field name="pmo_id"/> -->
+                      <field name="spi_global" digits="[2,6]"/>
+                      <field name="cpi_global" digits="[2,6]"/>
+                      <field name="spi_quarterly" digits="[2,6]"/>
+                      <field name="cpi_quarterly" digits="[2,6]"/>
+                      <field name="spi_team" digits="[2,6]"/>
+                      <field name="ofi" digits="[2,6]"/>
+                      <field name="project_staff_target" digits="[2,6]"/>
+                      <field name="state"/>
+                    </tree>
+                  </field>
+                </page>
+              </notebook>
+
+            </sheet>
+            <div class="o_attachment_preview"/>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="activity_ids" widget="mail_activity"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+        </form>
+      </field>
+    </record>
+
+
+
+    <!-- CPI / SPI Score Line-->
+
+    <record model="ir.ui.view" id="cpi_spi_scores_line_import_list">
+      <field name="name">Import CPI / SPI Score Line List</field>
+      <field name="model">evaluation.cpi_spi_raw_score_line</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="evaluation_period_id"/>
+          <field name="program_manager_id"/>
+          <field name="project_manager_id"/>
+          <field name="program_name"/>
+          <field name="project_name"/>
+          <!-- <field name="pgmo_id"/>
+          <field name="pmo_id"/> -->
+          <field name="spi_global" digits="[2,6]"/>
+          <field name="cpi_global" digits="[2,6]"/>
+          <field name="spi_quarterly" digits="[2,6]"/>
+          <field name="cpi_quarterly" digits="[2,6]"/>
+          <field name="spi_team" digits="[2,6]"/>
+          <field name="ofi" digits="[2,6]"/>
+          
+          
+          
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="cpi_spi_scores_line_import_form">
+      <field name="name">Import CPI / SPI Score Line Form</field>
+      <field name="model">evaluation.cpi_spi_raw_score_line</field>
+      <field name="arch" type="xml">
+        <form>
+            <header>
+              <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+
+                <!-- <button name="send_to_done" state = "draft" string="Done" icon="fa-check-circle" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-success" 
+                groups="ext_evaluation.group_evaluation_employee"/> -->
+            </header>
+            <sheet>
+              <group>
+                <group>
+                  <field name="parent_id" readonly="1"/>
+                </group>
+                <group>
+                  <field name="evaluation_period_id" />
+                </group>
+
+              </group>
+
+              <group>
+                  <group string="WBS">
+                    <field name="program_name" />
+                    <field name="project_name" />
+                    <field name="wbs_id"/>
+                  </group>
+                  <group string="Managers">
+                    <field name="pgmo_id" />
+                    <field name="pmo_id" />
+                  </group>
+              </group>
+              
+              <group>
+                <group string="Global Scores">
+                  <field name="spi_global" />
+                  <field name="cpi_global" />
+                </group>
+                <group string="Quarterly Scores">
+                  <field name="spi_quarterly" />
+                  <field name="cpi_quarterly" />
+                </group>
+              </group>
+
+              <group>
+                <group string="Effective Scores">
+                  <field name="spi_team" digits="[2,6]"/>
+                  <field name="ofi" digits="[2,6]"/>
+                </group>
+              </group>
+
+            </sheet>
+        </form>
+      </field>
+    </record>
+
+
+    <!-- Organization Score-->
+
+    <record model="ir.ui.view" id="organization_imports_list">
+      <field name="name">Import Organization Score</field>
+      <field name="model">evaluation.organization_raw_score</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="evaluation_period_id"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="organization_imports_form">
+      <field name="name">Organization Score Form</field>
+      <field name="model">evaluation.organization_raw_score</field>
+      <field name="arch" type="xml">
+        <form>
+            <header>
+              <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+
+                <button name="send_to_done" state = "draft" string="Done" icon="fa-check-circle" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-success" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+            </header>
+            <sheet>
+              <group>
+                <div class="oe_title">
+                    <!-- <label for="name" class="oe_edit_only"/> -->
+                    <h1><field name="name" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/></h1>
+                </div>
+              </group>
+              <group>
+                <group>
+                  <field name="evaluation_period_id"  domain="[('is_active','=',True)]" options="{'no_create_edit': True,'no_open': True}"  attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </group>
+                <group>
+                  <field name="score" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                </group>
+              </group>
+            </sheet>
+            <div class="o_attachment_preview"/>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="activity_ids" widget="mail_activity"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+        </form>
+      </field>
+    </record>
+
+
+    <!-- Upload CPI / SPI wizard -->
+
+    <record model="ir.ui.view" id="upload_cpispi_wizard_form">
+      <field name="name">Upload CPI / SPI</field>
+      <field name="model">evaluation.upload_cpi_spi_wizard</field>
+      <field name="arch" type="xml">
+        <form>
+              <group>
+                <div style="color: limegreen;font-size: 14px;font-weight: bold;">
+                Please make sure that:<br/>
+                1. Imported file has to have these columns:
+                <ul>
+                  <li>Quarter</li>
+                  <li>WBS Code</li>
+                  <li>Project Name</li>
+                  <li>Program</li>
+                  <li>Program Manager	</li>
+                  <li>Project Manager</li>
+                  <li>PgMO</li>
+                  <li>PMO</li>
+                  <li>SPI Global</li>
+                  <li>CPI Global</li>
+                  <li>SPI Quarterly</li>
+                  <li>CPI Quarterly</li>
+                  <li>Customer Satisfaction</li>
+                  <li>OFI</li>
+                  <li>SPI Team</li>
+                  <li>Project/Staff Target</li>
+                </ul>
+                2.Upload file must be in <b style="color:red;">csv</b> format
+                <!-- you can download the example file <a href="actions.xml"> here </a> -->
+                </div>
+                <field name="attachment" nolabel="1"/>
+              </group>
+              <footer>
+                  <button string="Cancel" special="cancel" class="btn-danger" />
+                  <button name="upload_data" string="Upload Data" type="object" class="btn-success" />
+              </footer>
+        </form>
+      </field>
+    </record>
+
+
+
+
+
+
+    <!-- Obejective Generator -->
+
+    <record model="ir.ui.view" id="objectives_generator_list">
+      <field name="name">Objective Generator</field>
+      <field name="model">evaluation.objective_generator</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="evaluation_period_id"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="objectives_generator_form">
+      <field name="name">Evaluation Generator Form</field>
+      <field name="model">evaluation.objective_generator</field>
+      <field name="arch" type="xml">
+        <form>
+            <header>
+              <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+
+                <button name="generate_objectives" state = "draft" icon="fa-object-group" string=" Generate Objectives" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-info" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+                <button name="send_to_done" state = "draft" icon="fa-check-circle" string=" Activate" type="object" attrs="{'invisible':[('state','!=','draft')]}" class="btn-success" 
+                groups="ext_evaluation.group_evaluation_employee"/>
+
+            </header>
+            <sheet>
+              <div style="color:cadetblue; font-size: 15px; font-weight:bolder;" class="text-center">
+                <field name="system_description" />
+              </div>
+              <group>
+                <group>
+                  <field name="name" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                  <field name="customer_satisfaction_period" attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('show_customer_satisfactions', '=', False)]}"/>
+                  
+                  <field name="show_customer_satisfactions" invisible="1"/>
+                </group>
+                <group>
+                  <field name="evaluation_period_id"  domain="[('is_active','=',True)]" options="{'no_create_edit': True,'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                  <!-- <field name="objective_id" options="{'no_create_edit': True,'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"  domain="[('is_fix','=',True), ('state', '=', 'running')]"/> -->
+                </group>
+              </group>
+
+              <notebook>
+                <page name="objectives" string="Source Objectives">
+                  <field name="objective_ids" options="{'no_create_edit': True,'no_open': True}"  domain="[('is_fix','=',True), ('state', '=', 'running')]">
+                    <tree editable="bottom">
+                      <field name="type_of_category_item"/>
+                      <field name="name"/>
+                      <field name="state" invisible="1"/>
+                      <field name="is_fix" invisible="1"/>
+                      <field name="function_name"/>
+
+
+                      
+                      
+                      
+                      
+                      
+                    </tree>
+                  </field>
+                </page>
+                <page name="lines" string="Lines">
+                  <field name="line_ids" options="{'no_create_edit': True,'no_open': True}">
+                  </field>
+                </page>
+                <page name="objectives" string="Objective Items">
+                  <field name="objective_item_ids" options="{'no_create_edit': True,'no_open': True}">
+                  </field>
+                </page>
+              </notebook>
+            </sheet>
+        </form>
+      </field>
+    </record>
+
+
+
+
+
+
+
+
+
+    <!-- Obejective Generator Line-->
+
+    <record model="ir.ui.view" id="objectives_generator_line_list">
+      <field name="name">Objective Generator Line</field>
+      <field name="model">evaluation.objective_generator_line</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="employee_id"/>
+          <field name="objective_id"/>
+          <field name="period_id"/>
+          <field name="score"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="objectives_generator_line_form">
+      <field name="name">Evaluation Generator Line Form</field>
+      <field name="model">evaluation.objective_generator_line</field>
+      <field name="arch" type="xml">
+        <form>
+            <header>
+              <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+
+            </header>
+            <sheet>
+              <group>
+                <group>
+                  <field name="generator_id"/>
+                  <field name="employee_id"/>
+                  <field name="objective_id"/>
+                  <field name="period_id"/>
+                </group>
+                <group>
+                  <field name="period_id"/>
+                  <field name="score"/>
+                  <field name="evaluation_item"/>
+                </group>
+              </group>
+            </sheet>
+        </form>
+      </field>
+    </record>
+
+
+
+
+
+    <record model="ir.actions.act_window" id="evaluation_cpi_spi_import_action_window">
+      <field name="name">CPI / SPI Import</field>
+      <field name="res_model">evaluation.cpi_spi_raw_score</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="evaluation_cpi_spi_line_import_action_window">
+      <field name="name">CPI / SPI Line Import</field>
+      <field name="res_model">evaluation.cpi_spi_raw_score_line</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="evaluation_organization_import_action_window">
+      <field name="name">Organization Import</field>
+      <field name="res_model">evaluation.organization_raw_score</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="evaluation_objective_generator_action_window">
+      <field name="name">Objective Generator</field>
+      <field name="res_model">evaluation.objective_generator</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="evaluation_objective_generator_line_action_window">
+      <field name="name">Objective Generator Line</field>
+      <field name="res_model">evaluation.objective_generator_line</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    
+
+    <menuitem name="CPI / SPI" id="cpi_spi_import_menuitem" parent="menu_evaluation_fix_items"
+              action="evaluation_cpi_spi_import_action_window" groups="group_evaluation_admin,group_eval_cpi_spi_manager" sequence="10"/>
+    <menuitem name="CPI / SPI Line" id="cpi_spi_line_import_menuitem" parent="menu_evaluation_fix_items"
+              action="evaluation_cpi_spi_line_import_action_window" groups="group_evaluation_admin,group_eval_cpi_spi_manager" sequence="20"/>
+    <menuitem name="Organization" id="organization_import_menuitem" parent="menu_evaluation_fix_items"
+              action="evaluation_organization_import_action_window" groups="group_evaluation_admin,group_eval_cpi_spi_manager" sequence="30"/>
+
+    <menuitem name="Objective Generator" id="eval_objective_generator_menuitem" parent="menu_evaluation_fix_items"
+              action="evaluation_objective_generator_action_window" groups="group_evaluation_admin" sequence="40"/>
+
+    <menuitem name="Objective Generator Line" id="eval_objective_generator_line_menuitem" parent="menu_evaluation_fix_items"
+              action="evaluation_objective_generator_line_action_window" groups="group_evaluation_admin" sequence="40"/>
+    
+
+</odoo>

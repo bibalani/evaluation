@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../../odoo/odoo-server/addons"
+		},
+		{
+			"path": "../../../../../Desktop/my_django_stuff/warehouse - second_version"
+		}
+	],
+	"settings": {}
+}

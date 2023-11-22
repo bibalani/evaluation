@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+<record model="ir.ui.view" id="sync_employee_wizard">
+<field name="name">update information of employee in evaluation</field>
+<field name="model">sync.employee.wizard</field>
+<field name="type">form</field>
+<field name="arch" type="xml">
+<form>
+    <span>Please choose requested period. if you want update information of special employee, please select it</span>
+    <group>
+    <group>
+        <field name="employee_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+    </group>
+    <group>
+        <field name="period_id" options="{'no_create': True, 'no_edit': True,'no_open': True}"/>
+    </group>
+    </group>
+    <footer>
+        <button string="Cancel" special="cancel" class="oe_highlight"/>
+        <button name="sync_evaluation" string="Sync" type="object" class="oe_highlight" />
+    </footer>
+
+</form>
+
+</field>
+
+</record>
+
+<act_window id="act_sync_employee_wizard"
+                name="Sync Employee Information"
+                res_model="sync.employee.wizard"
+                view_mode="form"
+                target="new"/>
+
+    <menuitem action="act_sync_employee_wizard"
+              id="menu_sync_employee_wizard"
+              parent="menu_evaluation_configuration_sub_menu" groups="ext_evaluation.group_evaluation_admin" sequence="14"/>
+
+</odoo>
